@@ -187,6 +187,30 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> RookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+        int [][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
+        List<ChessMove> possibilities = new ArrayList<>();
+
+        for (int[] direction: directions) {
+            int row = myPosition.getRow() + direction[0];
+            int col = myPosition.getColumn() + direction[1];
+
+            while (row>0 && row <9 && col>0 && col <9) {
+                ChessPosition destination = new ChessPosition(row,col);
+                ChessPiece target = board.getPiece(destination);
+
+                if (target == null) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                }
+                else {
+                    if (target.getTeamColor() != piece.getTeamColor()) {
+                        possibilities.add(new ChessMove(myPosition, destination, null));
+                    }
+                    break;
+                }
+                row += direction[0];
+                col += direction[1];
+            }
+        }
+        return possibilities;
     }
 }
