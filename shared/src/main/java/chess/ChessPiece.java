@@ -3,6 +3,7 @@ package chess;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * Represents a single chess piece
@@ -71,9 +72,93 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+        return switch (piece.getPieceType()) {
+            case BISHOP -> BishopMovesCalculator(board, myPosition, piece);
+            case KING -> KingMovesCalculator(board, myPosition, piece);
+            case KNIGHT -> KnightMovesCalculator(board, myPosition, piece);
+            case PAWN -> PawnMovesCalculator(board, myPosition, piece);
+            case QUEEN -> QueenMovesCalculator(board, myPosition, piece);
+            case ROOK -> RookMovesCalculator(board, myPosition, piece);
+        };
+    }
+
+    private Collection<ChessMove> BishopMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        int [][] directions = {{-1,-1},{-1,1},{1,-1},{1,1}};
+        List<ChessMove> possibilities = new ArrayList<>();
+
+        for (int[] direction: directions) {
+            int row = myPosition.getRow() + direction[0];
+            int col = myPosition.getColumn() + direction[1];
+
+            while (row>0 && row <9 && col>0 && col <9) {
+                ChessPosition destination = new ChessPosition(row,col);
+                ChessPiece target = board.getPiece(destination);
+
+                if (target == null) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                } else if (target.getTeamColor() != piece.getTeamColor()) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                }
+                row += direction[0];
+                col += direction[1];
+            }
         }
-        return List.of();
+        return possibilities;
+    }
+
+    private Collection<ChessMove> KingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        int [][] directions = {{-1,-1},{-1,0},{-1,1},{0,1},{-1,1},{1,1},{1,0},{1,-1}};
+        List<ChessMove> possibilities = new ArrayList<>();
+
+        for (int[] direction: directions) {
+            int row = myPosition.getRow() + direction[0];
+            int col = myPosition.getColumn() + direction[1];
+
+            if (row>0 && row <9 && col>0 && col <9) {
+                ChessPosition destination = new ChessPosition(row,col);
+                ChessPiece target = board.getPiece(destination);
+
+                if (target == null) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                } else if (target.getTeamColor() != piece.getTeamColor()) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                }
+            }
+        }
+        return possibilities;
+    }
+
+    private Collection<ChessMove> KnightMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        int [][] directions = {{-1,2},{1,2},{2,1},{2,-1},{-1,-2},{1,-2},{-2,-1},{-2,1}};
+        List<ChessMove> possibilities = new ArrayList<>();
+
+        for (int[] direction: directions) {
+            int row = myPosition.getRow() + direction[0];
+            int col = myPosition.getColumn() + direction[1];
+
+            if (row>0 && row <9 && col>0 && col <9) {
+                ChessPosition destination = new ChessPosition(row,col);
+                ChessPiece target = board.getPiece(destination);
+
+                if (target == null) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                } else if (target.getTeamColor() != piece.getTeamColor()) {
+                    possibilities.add(new ChessMove(myPosition, destination, null));
+                }
+            }
+        }
+        return possibilities;
+    }
+
+    private Collection<ChessMove> PawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+
+    }
+
+    private Collection<ChessMove> QueenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+
+    }
+
+    private Collection<ChessMove> RookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+
     }
 }
