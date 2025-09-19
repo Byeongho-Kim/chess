@@ -96,8 +96,12 @@ public class ChessPiece {
 
                 if (target == null) {
                     possibilities.add(new ChessMove(myPosition, destination, null));
-                } else if (target.getTeamColor() != piece.getTeamColor()) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
+                }
+                else {
+                    if (target.getTeamColor() != piece.getTeamColor()) {
+                        possibilities.add(new ChessMove(myPosition, destination, null));
+                    }
+                    break;
                 }
                 row += direction[0];
                 col += direction[1];
@@ -151,14 +155,14 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> PawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-
+        return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
     }
 
     private Collection<ChessMove> QueenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-
+        return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
     }
 
     private Collection<ChessMove> RookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-
+        return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
     }
 }
