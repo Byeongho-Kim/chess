@@ -157,13 +157,16 @@ public class ChessPiece {
     private Collection<ChessMove> PawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int startingPoint;
         int direction;
+        int promotionPoint;
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
              startingPoint= 2;
              direction = 1;
+             promotionPoint = 8;
          }
          else {
              startingPoint= 7;
              direction = -1;
+            promotionPoint = 1;
          }
         List<ChessMove> possibilities = new ArrayList<>();
         int row = myPosition.getRow() + direction;
@@ -173,15 +176,41 @@ public class ChessPiece {
             ChessPiece target = board.getPiece(destination);
 
             if (target == null) {
-                possibilities.add(new ChessMove(myPosition, destination, null));
+                if (row == promotionPoint) {
+                    possibilities.add(new ChessMove(myPosition, destination, PieceType.BISHOP));
+                    possibilities.add(new ChessMove(myPosition, destination, PieceType.KNIGHT));
+                    possibilities.add(new ChessMove(myPosition, destination, PieceType.QUEEN));
+                    possibilities.add(new ChessMove(myPosition, destination, PieceType.ROOK));
+                }
+                else
+                    possibilities.add(new ChessMove(myPosition, destination, null));
 
                 if (myPosition.getRow() == startingPoint) {
-                    ChessPosition twiceDestination = new ChessPosition(row+direction, myPosition.getColumn());
-                    ChessPiece twiceTarget = board.getPiece(twiceDestination);
-
-                    if (twiceTarget == null) {
-                        possibilities.add(new ChessMove(myPosition, twiceDestination, null));
+                    int twicePoint = myPosition.getRow() + (direction * 2);
+                    if (twicePoint > 0 && twicePoint < 9) {
+                        ChessPosition twiceDestination = new ChessPosition(twicePoint, myPosition.getColumn());
+                        ChessPiece twiceTarget = board.getPiece(twiceDestination);
+                        if (twiceTarget == null) {
+                            possibilities.add(new ChessMove(myPosition, twiceDestination, null));
+                        }
                     }
+                }
+            }
+        }
+        int[] captureCol = {myPosition.getColumn()-1, myPosition.getColumn()+1};
+        for (int col : captureCol) {
+            if (col > 0 && col < 9) {
+                ChessPosition captureDestination = new ChessPosition(row,col);
+                ChessPiece captureTarget = board.getPiece(captureDestination);
+                if (captureTarget != null && captureTarget.getTeamColor() != piece.getTeamColor()) {
+                    if (row == promotionPoint) {
+                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.BISHOP));
+                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.KNIGHT));
+                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.QUEEN));
+                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.ROOK));
+                    }
+                    else
+                        possibilities.add(new ChessMove(myPosition, captureDestination, null));
                 }
             }
         }
@@ -224,14 +253,13 @@ public class ChessPiece {
             int row = myPosition.getRow() + direction[0];
             int col = myPosition.getColumn() + direction[1];
 
-            while (row>0 && row <9 && col>0 && col <9) {
-                ChessPosition destination = new ChessPosition(row,col);
+            while (row > 0 && row < 9 && col > 0 && col < 9) {
+                ChessPosition destination = new ChessPosition(row, col);
                 ChessPiece target = board.getPiece(destination);
 
                 if (target == null) {
                     possibilities.add(new ChessMove(myPosition, destination, null));
-                }
-                else {
+                } else {
                     if (target.getTeamColor() != piece.getTeamColor()) {
                         possibilities.add(new ChessMove(myPosition, destination, null));
                     }
