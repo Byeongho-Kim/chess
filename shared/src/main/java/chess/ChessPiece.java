@@ -111,7 +111,7 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> KingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        int [][] directions = {{-1,-1},{-1,0},{-1,1},{0,1},{-1,1},{1,1},{1,0},{1,-1}};
+        int [][] directions = {{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
         List<ChessMove> possibilities = new ArrayList<>();
 
         for (int[] direction: directions) {
