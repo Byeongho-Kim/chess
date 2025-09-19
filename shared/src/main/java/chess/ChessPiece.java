@@ -155,7 +155,37 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> PawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8), null));
+        int startingPoint;
+        int direction;
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+             startingPoint= 2;
+             direction = 1;
+         }
+         else {
+             startingPoint= 7;
+             direction = -1;
+         }
+        List<ChessMove> possibilities = new ArrayList<>();
+        int row = myPosition.getRow() + direction;
+
+        if (row>0 && row <9) {
+            ChessPosition destination = new ChessPosition(row, myPosition.getColumn());
+            ChessPiece target = board.getPiece(destination);
+
+            if (target == null) {
+                possibilities.add(new ChessMove(myPosition, destination, null));
+
+                if (myPosition.getRow() == startingPoint) {
+                    ChessPosition twiceDestination = new ChessPosition(row+direction, myPosition.getColumn());
+                    ChessPiece twiceTarget = board.getPiece(twiceDestination);
+
+                    if (twiceTarget == null) {
+                        possibilities.add(new ChessMove(myPosition, twiceDestination, null));
+                    }
+                }
+            }
+        }
+        return possibilities;
     }
 
     private Collection<ChessMove> QueenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
