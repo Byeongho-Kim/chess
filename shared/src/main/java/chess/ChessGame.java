@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 
 /**
@@ -50,7 +52,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
@@ -70,7 +72,40 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition king = null;
+        for (int row = 1; row < 9; row ++) {
+            for (int col = 1; col <9; col ++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
+                    king = position;
+                    break;
+                }
+            }
+            if (king != null)
+                break;
+        }
+        if (king == null)
+            return false;
+
+        TeamColor opposingColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        for (int row = 1; row <9; row++) {
+            for (int col = 1; col <9; col++) {
+                ChessPosition opposingPosition = new ChessPosition(row, col);
+                ChessPiece opposingPiece = board.getPiece(opposingPosition);
+
+                if (opposingPiece != null && opposingPiece.getTeamColor() == opposingColor) {
+                    Collection<ChessMove> opposingMoves = opposingPiece.pieceMoves(board, opposingPosition);
+
+                    for (ChessMove opposingMove: opposingMoves) {
+                        if (opposingMove.getEndPosition() == king)
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
