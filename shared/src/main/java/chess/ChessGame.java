@@ -229,10 +229,10 @@ public class ChessGame {
     }
 
     private boolean isValid (ChessMove move) {
-        ChessPiece originalStartPiece = board.getPiece(move.getStartPosition());
-        ChessPiece originalEndPiece = board.getPiece(move.getEndPosition());
+        ChessPiece startPiece = board.getPiece(move.getStartPosition());
+        ChessPiece endPiece = board.getPiece(move.getEndPosition());
 
-        Collection<ChessMove> possibilities = originalStartPiece.pieceMoves(board, move.getStartPosition());
+        Collection<ChessMove> possibilities = startPiece.pieceMoves(board, move.getStartPosition());
         boolean isValid = false;
 
         for (ChessMove possibility : possibilities) {
@@ -250,17 +250,17 @@ public class ChessGame {
             board.addPiece(move.getStartPosition(), null);
 
             if (move.getPromotionPiece() != null )
-                board.addPiece(move.getEndPosition(), new ChessPiece(originalStartPiece.getTeamColor(), move.getPromotionPiece()));
+                board.addPiece(move.getEndPosition(), new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece()));
             else
-                board.addPiece(move.getEndPosition(), originalStartPiece);
+                board.addPiece(move.getEndPosition(), startPiece);
 
-            boolean isKingInCheck = isInCheck(originalStartPiece.getTeamColor());
+            boolean isKingInCheck = isInCheck(startPiece.getTeamColor());
 
             return !isKingInCheck;
         }
         finally {
-            board.addPiece(move.getStartPosition(), originalStartPiece);
-            board.addPiece(move.getEndPosition(), originalEndPiece);
+            board.addPiece(move.getStartPosition(), startPiece);
+            board.addPiece(move.getEndPosition(), endPiece);
         }
     }
 }
