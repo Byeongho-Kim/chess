@@ -110,7 +110,7 @@ public class ChessGame {
         else
             board.addPiece(move.getEndPosition(), newPiece);
 
-        teamTurn = (teamTurn == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
+        teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**
@@ -135,7 +135,7 @@ public class ChessGame {
                     Collection<ChessMove> opposingMoves = opposingPiece.pieceMoves(board, opposingPosition);
 
                     for (ChessMove opposingMove: opposingMoves) {
-                        if (opposingMove.getEndPosition() == king)
+                        if (opposingMove.getEndPosition().equals(king))
                             return true;
                     }
                 }
