@@ -75,7 +75,24 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+
+        if (piece == null)
+            throw new InvalidMoveException();
+        if (piece.getTeamColor() != teamTurn)
+            throw new InvalidMoveException();
+        if (!isValid(move))
+            throw new InvalidMoveException();
+
+        ChessPiece newPiece = board.getPiece(move.getStartPosition());
+        board.addPiece(move.getStartPosition(), null);
+
+        if (move.getPromotionPiece() != null)
+            board.addPiece(move.getEndPosition(), new ChessPiece(newPiece.getTeamColor(), move.getPromotionPiece()));
+        else
+            board.addPiece(move.getEndPosition(), newPiece);
+
+        teamTurn = (teamTurn == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
     }
 
     /**
@@ -169,25 +186,25 @@ public class ChessGame {
         return null;
     }
 
-    private boolean isValid (ChessMove posssibleMove) {
-        ChessPiece originalStartPiece = board.getPiece(posssibleMove.getStartPosition());
-        ChessPiece originalEndPiece = board.getPiece(posssibleMove.getEndPosition());
+    private boolean isValid (ChessMove move) {
+        ChessPiece originalStartPiece = board.getPiece(move.getStartPosition());
+        ChessPiece originalEndPiece = board.getPiece(move.getEndPosition());
 
         try {
-            board.addPiece(posssibleMove.getStartPosition(), null);
+            board.addPiece(move.getStartPosition(), null);
 
-            if (posssibleMove.getPromotionPiece() != null )
-                board.addPiece(posssibleMove.getEndPosition(), new ChessPiece(originalStartPiece.getTeamColor(), posssibleMove.getPromotionPiece()));
+            if (move.getPromotionPiece() != null )
+                board.addPiece(move.getEndPosition(), new ChessPiece(originalStartPiece.getTeamColor(), move.getPromotionPiece()));
             else
-                board.addPiece(posssibleMove.getEndPosition(), originalStartPiece);
+                board.addPiece(move.getEndPosition(), originalStartPiece);
 
             boolean kingInCheck = isInCheck(originalStartPiece.getTeamColor());
 
             return !kingInCheck;
         }
         finally {
-            board.addPiece(posssibleMove.getStartPosition(), originalStartPiece);
-            board.addPiece(posssibleMove.getEndPosition(), originalEndPiece);
+            board.addPiece(move.getStartPosition(), originalStartPiece);
+            board.addPiece(move.getEndPosition(), originalEndPiece);
         }
     }
 }
