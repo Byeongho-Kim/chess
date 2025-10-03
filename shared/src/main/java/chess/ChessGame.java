@@ -232,6 +232,20 @@ public class ChessGame {
         ChessPiece originalStartPiece = board.getPiece(move.getStartPosition());
         ChessPiece originalEndPiece = board.getPiece(move.getEndPosition());
 
+        Collection<ChessMove> possibilities = originalStartPiece.pieceMoves(board, move.getStartPosition());
+        boolean isValid = false;
+
+        for (ChessMove possibility : possibilities) {
+            if (possibility.equals(move)) {
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            return false;
+        }
+
         try {
             board.addPiece(move.getStartPosition(), null);
 
@@ -240,9 +254,9 @@ public class ChessGame {
             else
                 board.addPiece(move.getEndPosition(), originalStartPiece);
 
-            boolean kingInCheck = isInCheck(originalStartPiece.getTeamColor());
+            boolean isKingInCheck = isInCheck(originalStartPiece.getTeamColor());
 
-            return !kingInCheck;
+            return !isKingInCheck;
         }
         finally {
             board.addPiece(move.getStartPosition(), originalStartPiece);
