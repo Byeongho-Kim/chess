@@ -52,7 +52,20 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        List<ChessMove> validMoves = new ArrayList<>();
 
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null)
+            return null;
+
+        Collection<ChessMove> possibilities = piece.pieceMoves(board, startPosition);
+
+        for (ChessMove possibleMove : possibilities) {
+            if (isValid(possibleMove))
+                validMoves.add(possibleMove);
+        }
+
+        return validMoves;
     }
 
     /**
@@ -154,5 +167,27 @@ public class ChessGame {
             }
         }
         return null;
+    }
+
+    private boolean isValid (ChessMove posssibleMove) {
+        ChessPiece originalStartPiece = board.getPiece(posssibleMove.getStartPosition());
+        ChessPiece originalEndPiece = board.getPiece(posssibleMove.getEndPosition());
+
+        try {
+            board.addPiece(posssibleMove.getStartPosition(), null);
+
+            if (posssibleMove.getPromotionPiece() != null )
+                board.addPiece(posssibleMove.getEndPosition(), new ChessPiece(originalStartPiece.getTeamColor(), posssibleMove.getPromotionPiece()));
+            else
+                board.addPiece(posssibleMove.getEndPosition(), originalStartPiece);
+
+            boolean kingInCheck = isInCheck(originalStartPiece.getTeamColor());
+
+            return !kingInCheck;
+        }
+        finally {
+            board.addPiece(posssibleMove.getStartPosition(), originalStartPiece);
+            board.addPiece(posssibleMove.getEndPosition(), originalEndPiece);
+        }
     }
 }
