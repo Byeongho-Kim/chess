@@ -4,9 +4,7 @@ import chess.ChessGame;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.AuthData;
-import model.UserData;
 import model.GameData;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -54,7 +52,7 @@ public class GameService {
         try {
             AuthData auth = dataAccess.getAuth(authToken);
             if (auth == null) {
-                throw new ServiceException("Error: bad request", 400);
+                throw new ServiceException("Error: bad request", 401);
             }
 
             GameData game = dataAccess.getGame(gameID);
@@ -75,9 +73,9 @@ public class GameService {
     }
 
     public static class ListGamesResult {
-        public List<GameData> games;
+        public java.util.List<GameData> games;
 
-        public ListGamesResult(List<GameData> games) {
+        public ListGamesResult(java.util.List<GameData> games) {
             this.games = games;
         }
     }

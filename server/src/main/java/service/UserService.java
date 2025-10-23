@@ -57,7 +57,7 @@ public class UserService {
             dataAccess.deleteAuth(authToken);
         }
         catch (DataAccessException e) {
-            throw new ServiceException("Error:"+ e.getMessage(), 500);
+            throw new ServiceException("Error: "+ e.getMessage(), 500);
         }
     }
 

@@ -18,34 +18,30 @@ public class GameHandler {
 
     public void listGames(Context ctx) throws Exception {
         String authToken = ctx.header("authorization");
-        var result = gameService.listGames(authToken);
+        GameService.ListGamesResult result = gameService.listGames(authToken);
         ctx.json(gson.toJson(result));
     }
 
-    public void createGames(Context ctx) throws Exception {
+    public void createGame(Context ctx) throws Exception {
         String authToken = ctx.header("authorization");
-        String body = ctx.body();
-        String gameName = extractValue(body, "gameName");
-
-        var result = gameService.createGame(authToken, gameName);
+        CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
+        GameService.CreateGameResult result = gameService.createGame(authToken, request.gameName);
         ctx.json(gson.toJson(result));
     }
 
-    public void joinGames(Context ctx) throws Exception {
+    public void joinGame(Context ctx) throws Exception {
         String authToken = ctx.header("authorization");
-        String body = ctx.body();
-        String playerColor = extractValue(body, "playerColor");
-        String gameIDStr = extractValue(body, "gameID");
-        int gameID = Integer.parseInt(gameIDStr);
-
-        gameService.joinGame(authToken, playerColor, gameID);
+        JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
+        gameService.joinGame(authToken, request.playerColor, request.gameID);
         ctx.status(200);
     }
 
-    private String extractValue(String json, String key) {
-        String pattern = "\"" + key + "\":\"";
-        int start = json.indexOf(pattern) + pattern.length();
-        int end = json.indexOf("\"", start);
-        return json.substring(start, end);
+    public static class CreateGameRequest {
+        public String gameName;
+    }
+
+    public static class JoinGameRequest {
+        public String playerColor;
+        public int gameID;
     }
 }

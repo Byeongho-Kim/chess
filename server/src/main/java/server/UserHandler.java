@@ -16,21 +16,14 @@ public class UserHandler {
     }
 
     public void register(Context ctx) throws Exception {
-        String body = ctx.body();
-        String username = extractValue(body, "username");
-        String password = extractValue(body, "password");
-        String email = extractValue(body, "email");
-
-        var result = userService.register(username, password, email);
+        RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
+        UserService.RegisterResult result = userService.register(request.username, request.password, request.email);
         ctx.json(gson.toJson(result));
     }
 
     public void login(Context ctx) throws Exception {
-        String body = ctx.body();
-        String username = extractValue(body, "username");
-        String password = extractValue(body, "password");
-
-        var result = userService.login(username, password);
+        LoginRequest request = gson.fromJson(ctx.body(), LoginRequest.class);
+        UserService.LoginResult result = userService.login(request.username, request.password);
         ctx.json(gson.toJson(result));
     }
 
@@ -40,10 +33,14 @@ public class UserHandler {
         ctx.status(200);
     }
 
-    private String extractValue(String json, String key) {
-        String pattern = "\"" + key + "\":\"";
-        int start = json.indexOf(pattern) + pattern.length();
-        int end = json.indexOf("\"", start);
-        return json.substring(start, end);
+    public static class RegisterRequest {
+        public String username;
+        public String password;
+        public String email;
+    }
+
+    public static class LoginRequest {
+        public String username;
+        public String password;
     }
 }
