@@ -111,10 +111,12 @@ public class ChessGame {
         ChessPiece newPiece = board.getPiece(move.getStartPosition());
         board.addPiece(move.getStartPosition(), null);
 
-        if (move.getPromotionPiece() != null)
+        if (move.getPromotionPiece() != null) {
             board.addPiece(move.getEndPosition(), new ChessPiece(newPiece.getTeamColor(), move.getPromotionPiece()));
-        else
+        }
+        else {
             board.addPiece(move.getEndPosition(), newPiece);
+        }
 
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
