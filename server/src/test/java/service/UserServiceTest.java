@@ -34,6 +34,20 @@ public class UserServiceTest {
     }
 
     @Test
+    public void testRegisterBadRequest() throws Exception {
+        DataAccess dataAccess = new MemoryDataAccess();
+        UserService userService = new UserService(dataAccess);
+
+        try {
+            userService.register(null, "password123", "test@example.com");
+            fail("Should have thrown exception");
+        }
+        catch (ServiceException e) {
+            assertTrue(e.getMessage().contains("bad request"));
+        }
+    }
+
+    @Test
     public void testLoginSuccess() throws Exception {
         DataAccess dataAccess = new MemoryDataAccess();
         UserService userService = new UserService(dataAccess);
@@ -57,6 +71,20 @@ public class UserServiceTest {
         }
         catch (ServiceException e) {
             assertTrue(e.getMessage().contains("unauthorized"));
+        }
+    }
+
+    @Test
+    public void testLoginBadRequest() throws Exception {
+        DataAccess dataAccess = new MemoryDataAccess();
+        UserService userService = new UserService(dataAccess);
+
+        try {
+            userService.login(null, "password123");
+            fail("Should have thrown exception");
+        }
+        catch (ServiceException e) {
+            assertTrue(e.getMessage().contains("bad request"));
         }
     }
 
