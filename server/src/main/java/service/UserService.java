@@ -15,15 +15,69 @@ public class UserService {
 
     public RegisterResult register(String username, String password, String email) throws ServiceException {
         try {
-            if(dataAccess.getUser(username) !=)
+            if(dataAccess.getUser(username) != null) {
+                throw new ServiceException("Error: already taken", 403);
+            }
+
+            UserData user = new UserData(username, password, email);
+            dataAccess.createUser(user);
+
+            String authToken = UUID.randomUUID().toString();
+            AuthData auth = new AuthData(authToken, username);
+            dataAccess.createAuth(auth);
+
+            return new RegisterResult(username, authToken);
+
+        }
+        catch (DataAccessException e) {
+            throw new ServiceException("Error: "+ e.getMessage(), 500);
         }
     }
 
-    public LoginResult login(String username, String password) throws ServiceException {}
+    public LoginResult login(String username, String password) throws ServiceException {
+        try {
+            UserData user = dataAccess.getUser(username);
+            if (user == null || !user.password().equals(password)) {
+                throw new ServiceException("Error: unauthorized", 401);
+            }
 
-    public void logout(String authToken) throws ServiceException {}
+            String authToken = UUID.randomUUID().toString();
+            AuthData auth = new AuthData(authToken, username);
+            dataAccess.createAuth(auth);
 
-    public static class RegisterRequest {}
+            return new LoginResult(username, authToken);
+        }
+        catch (DataAccessException e) {
+            throw new ServiceException("Error: "+ e.getMessage(), 500);
+        }
+    }
 
-    public static class LoginRequest {}
+    public void logout(String authToken) throws ServiceException {
+        try {
+            dataAccess.deleteAuth(authToken);
+        }
+        catch (DataAccessException e) {
+            throw new ServiceException("Error:"+ e.getMessage(), 500);
+        }
+    }
+
+    public static class RegisterResult {
+        public String username;
+        public String authToken;
+
+        public RegisterResult(String username, String authToken) {
+            this.username = username;
+            this.authToken = authToken;
+        }
+    }
+
+    public static class LoginResult {
+        public String username;
+        public String authToken;
+
+        public LoginResult(String username, String authToken) {
+            this.username = username;
+            this.authToken = authToken;
+        }
+    }
 }
