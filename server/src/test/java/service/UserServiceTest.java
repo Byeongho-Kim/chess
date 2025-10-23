@@ -104,7 +104,12 @@ public class UserServiceTest {
         DataAccess dataAccess = new MemoryDataAccess();
         UserService userService = new UserService(dataAccess);
 
-        userService.logout("invalidtoken");
-        assertTrue(true);
+        try {
+            userService.logout("invalidtoken");
+            fail("Should have thrown exception");
+        }
+        catch (ServiceException e) {
+            assertTrue(e.getMessage().contains("unauthorized"));
+        }
     }
 }

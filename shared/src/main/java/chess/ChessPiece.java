@@ -89,111 +89,104 @@ public class ChessPiece {
 
     private Collection<ChessMove> kingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
-        List<ChessMove> possibilities = new ArrayList<>();
-
-        for (int[] direction: directions) {
-            int row = myPosition.getRow() + direction[0];
-            int col = myPosition.getColumn() + direction[1];
-
-            if (row>0 && row <9 && col>0 && col <9) {
-                ChessPosition destination = new ChessPosition(row,col);
-                ChessPiece target = board.getPiece(destination);
-
-                if (target == null) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                } else if (target.getTeamColor() != piece.getTeamColor()) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                }
-            }
-        }
-        return possibilities;
+        return calculateMoves(board, myPosition, directions, 1);
     }
 
     private Collection<ChessMove> knightMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,2},{1,2},{2,1},{2,-1},{-1,-2},{1,-2},{-2,-1},{-2,1}};
-        List<ChessMove> possibilities = new ArrayList<>();
-
-        for (int[] direction: directions) {
-            int row = myPosition.getRow() + direction[0];
-            int col = myPosition.getColumn() + direction[1];
-
-            if (row>0 && row <9 && col>0 && col <9) {
-                ChessPosition destination = new ChessPosition(row,col);
-                ChessPiece target = board.getPiece(destination);
-
-                if (target == null) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                } else if (target.getTeamColor() != piece.getTeamColor()) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                }
-            }
-        }
-        return possibilities;
+        return calculateMoves(board, myPosition, directions, 1);
     }
 
     private Collection<ChessMove> pawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        int startingPoint;
-        int direction;
-        int promotionPoint;
-        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-             startingPoint= 2;
-             direction = 1;
-             promotionPoint = 8;
-         }
-         else {
-             startingPoint= 7;
-             direction = -1;
-            promotionPoint = 1;
-         }
         List<ChessMove> possibilities = new ArrayList<>();
-        int row = myPosition.getRow() + direction;
+        PawnMovementParams params = getPawnMovementParams(piece);
+        addForwardMoves(possibilities, board, myPosition, params);
+        addCaptureMoves(possibilities, board, myPosition, params);
 
-        if (row>0 && row <9) {
+        return possibilities;
+    }
+
+    private PawnMovementParams getPawnMovementParams(ChessPiece piece) {
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            return new PawnMovementParams(2, 1, 8);
+        }
+        else {
+            return new PawnMovementParams(7, -1, 1);
+        }
+    }
+
+    private void addForwardMoves(List<ChessMove> possibilities, ChessBoard board,
+                                 ChessPosition myPosition, PawnMovementParams params) {
+        int row = myPosition.getRow() + params.direction;
+
+        if (row > 0 && row < 9) {
             ChessPosition destination = new ChessPosition(row, myPosition.getColumn());
             ChessPiece target = board.getPiece(destination);
 
             if (target == null) {
-                if (row == promotionPoint) {
-                    possibilities.add(new ChessMove(myPosition, destination, PieceType.BISHOP));
-                    possibilities.add(new ChessMove(myPosition, destination, PieceType.KNIGHT));
-                    possibilities.add(new ChessMove(myPosition, destination, PieceType.QUEEN));
-                    possibilities.add(new ChessMove(myPosition, destination, PieceType.ROOK));
-                }
-                else {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                }
+                addPromotionMoves(possibilities, myPosition, destination, row, params.promotionPoint);
 
-                if (myPosition.getRow() == startingPoint) {
-                    int twicePoint = myPosition.getRow() + (direction * 2);
-                    if (twicePoint > 0 && twicePoint < 9) {
-                        ChessPosition twiceDestination = new ChessPosition(twicePoint, myPosition.getColumn());
-                        ChessPiece twiceTarget = board.getPiece(twiceDestination);
-                        if (twiceTarget == null) {
-                            possibilities.add(new ChessMove(myPosition, twiceDestination, null));
-                        }
-                    }
+                if (myPosition.getRow() == params.startingPoint) {
+                    addDoubleMove(possibilities, board, myPosition, params);
                 }
             }
         }
-        int[] captureCol = {myPosition.getColumn()-1, myPosition.getColumn()+1};
+    }
+
+    private void addPromotionMoves(List<ChessMove> possibilities, ChessPosition myPosition,
+                                   ChessPosition destination, int row, int promotionPoint) {
+        if (row == promotionPoint) {
+            possibilities.add(new ChessMove(myPosition, destination, PieceType.BISHOP));
+            possibilities.add(new ChessMove(myPosition, destination, PieceType.KNIGHT));
+            possibilities.add(new ChessMove(myPosition, destination, PieceType.QUEEN));
+            possibilities.add(new ChessMove(myPosition, destination, PieceType.ROOK));
+        }
+        else {
+            possibilities.add(new ChessMove(myPosition, destination, null));
+        }
+    }
+
+    private void addDoubleMove(List<ChessMove> possibilities, ChessBoard board,
+                               ChessPosition myPosition, PawnMovementParams params) {
+        int twicePoint = myPosition.getRow() + (params.direction * 2);
+
+        if (twicePoint > 0 && twicePoint < 9) {
+            ChessPosition twiceDestination = new ChessPosition(twicePoint, myPosition.getColumn());
+            ChessPiece twiceTarget = board.getPiece(twiceDestination);
+
+            if (twiceTarget == null) {
+                possibilities.add(new ChessMove(myPosition, twiceDestination, null));
+            }
+        }
+    }
+
+    private void addCaptureMoves(List<ChessMove> possibilities, ChessBoard board,
+                                 ChessPosition myPosition, PawnMovementParams params) {
+        int row = myPosition.getRow() + params.direction;
+        int[] captureCol = {myPosition.getColumn() - 1, myPosition.getColumn() + 1};
+
         for (int col : captureCol) {
             if (col > 0 && col < 9) {
-                ChessPosition captureDestination = new ChessPosition(row,col);
+                ChessPosition captureDestination = new ChessPosition(row, col);
                 ChessPiece captureTarget = board.getPiece(captureDestination);
-                if (captureTarget != null && captureTarget.getTeamColor() != piece.getTeamColor()) {
-                    if (row == promotionPoint) {
-                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.BISHOP));
-                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.KNIGHT));
-                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.QUEEN));
-                        possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.ROOK));
-                    }
-                    else {
-                        possibilities.add(new ChessMove(myPosition, captureDestination, null));
-                    }
+
+                if (captureTarget != null && captureTarget.getTeamColor() != getTeamColor()) {
+                    addPromotionMoves(possibilities, myPosition, captureDestination, row, params.promotionPoint);
                 }
             }
         }
-        return possibilities;
+    }
+
+    private static class PawnMovementParams {
+        final int startingPoint;
+        final int direction;
+        final int promotionPoint;
+
+        PawnMovementParams(int startingPoint, int direction, int promotionPoint) {
+            this.startingPoint = startingPoint;
+            this.direction = direction;
+            this.promotionPoint = promotionPoint;
+        }
     }
 
     private Collection<ChessMove> queenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
