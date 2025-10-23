@@ -69,6 +69,26 @@ public class GameServiceTest {
     }
 
     @Test
+    public void testCreateGameBadRequest() throws Exception {
+        DataAccess dataAccess = new MemoryDataAccess();
+        GameService gameService = new GameService(dataAccess);
+
+        UserData user = new UserData("testuser", "password", "test@example.com");
+        dataAccess.createUser(user);
+        String authToken = "test-token-123";
+        AuthData auth = new AuthData(authToken, "testuser");
+        dataAccess.createAuth(auth);
+
+        try {
+            gameService.createGame(authToken, null);
+            fail("Should have thrown exception");
+        }
+        catch (ServiceException e) {
+            assertTrue(e.getMessage().contains("bad request"));
+        }
+    }
+
+    @Test
     public void testJoinGameSuccess() throws Exception {
         DataAccess dataAccess = new MemoryDataAccess();
         GameService gameService = new GameService(dataAccess);
@@ -106,6 +126,26 @@ public class GameServiceTest {
         }
         catch (ServiceException e) {
             assertTrue(e.getMessage().contains("already taken"));
+        }
+    }
+
+    @Test
+    public void testJoinGameBadRequest() throws Exception {
+        DataAccess dataAccess = new MemoryDataAccess();
+        GameService gameService = new GameService(dataAccess);
+
+        UserData user = new UserData("testuser", "password", "test@example.com");
+        dataAccess.createUser(user);
+        String authToken = "test-token-123";
+        AuthData auth = new AuthData(authToken, "testuser");
+        dataAccess.createAuth(auth);
+
+        try {
+            gameService.joinGame(authToken, "INVALID", 1);
+            fail("Should have thrown exception");
+        }
+        catch (ServiceException e) {
+            assertTrue(e.getMessage().contains("bad request"));
         }
     }
 }

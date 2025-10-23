@@ -78,7 +78,12 @@ public class GameService {
             if (currentPlayer != null)
                 throw new ServiceException("Error: already taken", 403);
 
-            GameData updatedGame = new GameData(game.gameID(),playerColor.equals("WHITE") ? auth.username():game.whiteUsername(), playerColor.equals("BLACK") ? auth.username():game.blackUsername(), game.gameName(), game.game());
+            GameData updatedGame = new GameData(
+                    game.gameID(),
+                    playerColor.equals("WHITE") ? auth.username():game.whiteUsername(),
+                    playerColor.equals("BLACK") ? auth.username():game.blackUsername(),
+                    game.gameName(),
+                    game.game());
             dataAccess.updateGame(updatedGame);
         }
         catch (DataAccessException e) {

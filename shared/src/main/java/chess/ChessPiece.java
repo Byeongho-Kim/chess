@@ -82,7 +82,7 @@ public class ChessPiece {
         };
     }
 
-    private Collection<ChessMove> BishopMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> bishopMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,-1},{-1,1},{1,-1},{1,1}};
         List<ChessMove> possibilities = new ArrayList<>();
 
@@ -110,7 +110,7 @@ public class ChessPiece {
         return possibilities;
     }
 
-    private Collection<ChessMove> KingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> kingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
         List<ChessMove> possibilities = new ArrayList<>();
 
@@ -132,7 +132,7 @@ public class ChessPiece {
         return possibilities;
     }
 
-    private Collection<ChessMove> KnightMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> knightMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,2},{1,2},{2,1},{2,-1},{-1,-2},{1,-2},{-2,-1},{-2,1}};
         List<ChessMove> possibilities = new ArrayList<>();
 
@@ -154,7 +154,7 @@ public class ChessPiece {
         return possibilities;
     }
 
-    private Collection<ChessMove> PawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> pawnMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int startingPoint;
         int direction;
         int promotionPoint;
@@ -217,7 +217,7 @@ public class ChessPiece {
         return possibilities;
     }
 
-    private Collection<ChessMove> QueenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> queenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
         List<ChessMove> possibilities = new ArrayList<>();
 
@@ -245,7 +245,7 @@ public class ChessPiece {
         return possibilities;
     }
 
-    private Collection<ChessMove> RookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    private Collection<ChessMove> rookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
         List<ChessMove> possibilities = new ArrayList<>();
 
