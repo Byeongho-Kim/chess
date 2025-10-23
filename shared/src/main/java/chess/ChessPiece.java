@@ -84,30 +84,7 @@ public class ChessPiece {
 
     private Collection<ChessMove> bishopMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,-1},{-1,1},{1,-1},{1,1}};
-        List<ChessMove> possibilities = new ArrayList<>();
-
-        for (int[] direction: directions) {
-            int row = myPosition.getRow() + direction[0];
-            int col = myPosition.getColumn() + direction[1];
-
-            while (row>0 && row <9 && col>0 && col <9) {
-                ChessPosition destination = new ChessPosition(row,col);
-                ChessPiece target = board.getPiece(destination);
-
-                if (target == null) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                }
-                else {
-                    if (target.getTeamColor() != piece.getTeamColor()) {
-                        possibilities.add(new ChessMove(myPosition, destination, null));
-                    }
-                    break;
-                }
-                row += direction[0];
-                col += direction[1];
-            }
-        }
-        return possibilities;
+        return calculateMoves(board, myPosition, directions, 8);
     }
 
     private Collection<ChessMove> kingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
@@ -182,8 +159,9 @@ public class ChessPiece {
                     possibilities.add(new ChessMove(myPosition, destination, PieceType.QUEEN));
                     possibilities.add(new ChessMove(myPosition, destination, PieceType.ROOK));
                 }
-                else
+                else {
                     possibilities.add(new ChessMove(myPosition, destination, null));
+                }
 
                 if (myPosition.getRow() == startingPoint) {
                     int twicePoint = myPosition.getRow() + (direction * 2);
@@ -209,8 +187,9 @@ public class ChessPiece {
                         possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.QUEEN));
                         possibilities.add(new ChessMove(myPosition, captureDestination, PieceType.ROOK));
                     }
-                    else
+                    else {
                         possibilities.add(new ChessMove(myPosition, captureDestination, null));
+                    }
                 }
             }
         }
@@ -219,48 +198,35 @@ public class ChessPiece {
 
     private Collection<ChessMove> queenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         int [][] directions = {{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
+        return calculateMoves(board, myPosition, directions, 8);
+    }
+
+    private Collection<ChessMove> rookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+        int [][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
+        return calculateMoves(board, myPosition, directions, 8);
+    }
+
+    private Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition,
+                                                 int[][] directions, int maxDistance) {
         List<ChessMove> possibilities = new ArrayList<>();
 
-        for (int[] direction: directions) {
+        for (int[] direction : directions) {
             int row = myPosition.getRow() + direction[0];
             int col = myPosition.getColumn() + direction[1];
 
-            while (row>0 && row <9 && col>0 && col <9) {
-                ChessPosition destination = new ChessPosition(row,col);
+            for (int i = 0; i < maxDistance; i++) {
+                if (row < 1 || row > 8 || col < 1 || col > 8) {
+                    break;
+                }
+
+                ChessPosition destination = new ChessPosition(row, col);
                 ChessPiece target = board.getPiece(destination);
 
                 if (target == null) {
                     possibilities.add(new ChessMove(myPosition, destination, null));
                 }
                 else {
-                    if (target.getTeamColor() != piece.getTeamColor()) {
-                        possibilities.add(new ChessMove(myPosition, destination, null));
-                    }
-                    break;
-                }
-                row += direction[0];
-                col += direction[1];
-            }
-        }
-        return possibilities;
-    }
-
-    private Collection<ChessMove> rookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
-        int [][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
-        List<ChessMove> possibilities = new ArrayList<>();
-
-        for (int[] direction: directions) {
-            int row = myPosition.getRow() + direction[0];
-            int col = myPosition.getColumn() + direction[1];
-
-            while (row > 0 && row < 9 && col > 0 && col < 9) {
-                ChessPosition destination = new ChessPosition(row, col);
-                ChessPiece target = board.getPiece(destination);
-
-                if (target == null) {
-                    possibilities.add(new ChessMove(myPosition, destination, null));
-                } else {
-                    if (target.getTeamColor() != piece.getTeamColor()) {
+                    if (target.getTeamColor() != getTeamColor()) {
                         possibilities.add(new ChessMove(myPosition, destination, null));
                     }
                     break;

@@ -75,8 +75,9 @@ public class GameService {
             }
 
             String currentPlayer = playerColor.equals("WHITE") ? game.whiteUsername() : game.blackUsername();
-            if (currentPlayer != null)
+            if (currentPlayer != null) {
                 throw new ServiceException("Error: already taken", 403);
+            }
 
             GameData updatedGame = new GameData(
                     game.gameID(),
