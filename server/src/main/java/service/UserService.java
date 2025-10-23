@@ -13,7 +13,11 @@ public class UserService {
         this.dataAccess = dataAccess;
     }
 
-    public RegisterResult register(String username, String password, String email) throws ServiceException {}
+    public RegisterResult register(String username, String password, String email) throws ServiceException {
+        try {
+            if(dataAccess.getUser(username) !=)
+        }
+    }
 
     public LoginResult login(String username, String password) throws ServiceException {}
 
