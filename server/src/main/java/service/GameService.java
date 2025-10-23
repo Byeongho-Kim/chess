@@ -32,6 +32,10 @@ public class GameService {
 
     public CreateGameResult createGame(String authToken, String gameName) throws ServiceException {
         try {
+            if (gameName == null || gameName.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+
             AuthData auth = dataAccess.getAuth(authToken);
             if (auth == null) {
                 throw new ServiceException("Error: unauthorized", 401);
@@ -53,6 +57,16 @@ public class GameService {
             AuthData auth = dataAccess.getAuth(authToken);
             if (auth == null) {
                 throw new ServiceException("Error: bad request", 401);
+            }
+
+            if (playerColor == null || playerColor.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+            if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+            if (gameID <= 0) {
+                throw new ServiceException("Error: bad request", 400);
             }
 
             GameData game = dataAccess.getGame(gameID);

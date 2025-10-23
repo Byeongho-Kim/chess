@@ -25,6 +25,13 @@ public class GameHandler {
     public void createGame(Context ctx) throws Exception {
         String authToken = ctx.header("authorization");
         CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
+
+        if (request.gameName == null) {
+            ctx.status(400);
+            ctx.json("{\"message\":\"Error: bad request\"}");
+            return;
+        }
+
         GameService.CreateGameResult result = gameService.createGame(authToken, request.gameName);
         ctx.json(gson.toJson(result));
     }
@@ -32,6 +39,13 @@ public class GameHandler {
     public void joinGame(Context ctx) throws Exception {
         String authToken = ctx.header("authorization");
         JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
+
+        if (request.playerColor == null || request.gameID <= 0) {
+            ctx.status(400);
+            ctx.json("{\"message\":\"Error: bad request\"}");
+            return;
+        }
+
         gameService.joinGame(authToken, request.playerColor, request.gameID);
         ctx.status(200);
     }

@@ -15,6 +15,15 @@ public class UserService {
 
     public RegisterResult register(String username, String password, String email) throws ServiceException {
         try {
+            if (username == null || username.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+            if (password == null || password.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+            if (email == null || email.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
             if(dataAccess.getUser(username) != null) {
                 throw new ServiceException("Error: already taken", 403);
             }
@@ -36,6 +45,13 @@ public class UserService {
 
     public LoginResult login(String username, String password) throws ServiceException {
         try {
+            if (username == null || username.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+            if (password == null || password.trim().isEmpty()) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+
             UserData user = dataAccess.getUser(username);
             if (user == null || !user.password().equals(password)) {
                 throw new ServiceException("Error: unauthorized", 401);
@@ -54,6 +70,10 @@ public class UserService {
 
     public void logout(String authToken) throws ServiceException {
         try {
+            if (dataAccess.getAuth(authToken) == null) {
+                throw new ServiceException("Error: unauthorized", 401);
+            }
+
             dataAccess.deleteAuth(authToken);
         }
         catch (DataAccessException e) {
