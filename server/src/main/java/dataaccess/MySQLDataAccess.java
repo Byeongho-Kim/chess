@@ -9,6 +9,10 @@ import model.AuthData;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.gson.Gson;
+import org.mindrot.jbcrypt.BCrypt;
+import java.sql.*;
+
 public class MySQLDataAccess implements DataAccess {
     private int nextGameID = 1;
 
@@ -110,4 +114,18 @@ public class MySQLDataAccess implements DataAccess {
         )
         """
     };
+
+    private void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Unable to configure database: " + ex.getMessage());
+        }
+    }
 }
