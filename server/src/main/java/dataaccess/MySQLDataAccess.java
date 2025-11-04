@@ -112,25 +112,71 @@ public class MySQLDataAccess implements DataAccess {
     // GAME
     @Override
     public void createGame(GameData game) throws DataAccessException {
-        throw new DataAccessException("");
+        var json = new Gson().toJson(game.game());
+        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+        executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), json);
     }
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
         return null;
     }
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
+        var json = new Gson().toJson(game.game());
+        var statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameID=?";
+        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json, game.gameID());
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return new ArrayList<>();
+        var result = new ArrayList<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGame(rs));
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
+        return result;
     }
 
     @Override
     public void clearGames() throws DataAccessException {
+        var statement = "TRUNCATE game";
+        executeUpdate(statement);
+        nextGameID = 1;
+    }
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var gameID = rs.getInt("gameID");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        var json = rs.getString("game");
+        var game = new Gson().fromJson(json, ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     // UTILITY

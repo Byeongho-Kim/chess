@@ -138,4 +138,95 @@ public class DataAccessTests {
 
         assertNull(dataAccess.getAuth("token123"));
     }
+
+    // GAME
+
+    @Test
+    void createGamePositive() throws DataAccessException {
+        ChessGame game = new ChessGame();
+        GameData gameData = new GameData(1, null, null, "TestGame", game);
+        dataAccess.createGame(gameData);
+
+        GameData result = dataAccess.getGame(1);
+        assertNotNull(result);
+        assertEquals("TestGame", result.gameName());
+        assertNotNull(result.game());
+    }
+
+    @Test
+    void createGameNegative() throws DataAccessException {
+        ChessGame game = new ChessGame();
+        GameData gameData = new GameData(1, null, null, "TestGame", game);
+        dataAccess.createGame(gameData);
+
+        assertThrows(DataAccessException.class, () -> dataAccess.createGame(gameData));
+    }
+
+    @Test
+    void getGamePositive() throws DataAccessException {
+        ChessGame game = new ChessGame();
+        GameData gameData = new GameData(1, "white", "black", "TestGame", game);
+        dataAccess.createGame(gameData);
+
+        GameData result = dataAccess.getGame(1);
+        assertNotNull(result);
+        assertEquals(1, result.gameID());
+        assertEquals("TestGame", result.gameName());
+    }
+
+    @Test
+    void getGameNegative() throws DataAccessException {
+        GameData result = dataAccess.getGame(999);
+        assertNull(result);
+    }
+
+    @Test
+    void updateGamePositive() throws DataAccessException {
+        ChessGame game = new ChessGame();
+        GameData gameData = new GameData(1, null, null, "TestGame", game);
+        dataAccess.createGame(gameData);
+
+        GameData updated = new GameData(1, "white", "black", "TestGame", game);
+        dataAccess.updateGame(updated);
+
+        GameData result = dataAccess.getGame(1);
+        assertEquals("white", result.whiteUsername());
+        assertEquals("black", result.blackUsername());
+    }
+
+    @Test
+    void updateGameNegative() throws DataAccessException {
+        ChessGame game = new ChessGame();
+        GameData gameData = new GameData(999, "white", "black", "TestGame", game);
+
+        assertDoesNotThrow(() -> dataAccess.updateGame(gameData));
+    }
+
+    @Test
+    void listGamesPositive() throws DataAccessException {
+        ChessGame game1 = new ChessGame();
+        ChessGame game2 = new ChessGame();
+        dataAccess.createGame(new GameData(1, null, null, "Game1", game1));
+        dataAccess.createGame(new GameData(2, null, null, "Game2", game2));
+
+        var games = dataAccess.listGames();
+        assertEquals(2, games.size());
+    }
+
+    @Test
+    void listGamesNegative() throws DataAccessException {
+        var games = dataAccess.listGames();
+        assertNotNull(games);
+        assertEquals(0, games.size());
+    }
+
+    @Test
+    void clearGames() throws DataAccessException {
+        ChessGame game = new ChessGame();
+        dataAccess.createGame(new GameData(1, null, null, "TestGame", game));
+
+        dataAccess.clearGames();
+
+        assertEquals(0, dataAccess.listGames().size());
+    }
 }
