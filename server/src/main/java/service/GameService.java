@@ -18,6 +18,7 @@ public class GameService {
     public ListGamesResult listGames(String authToken) throws ServiceException {
         try {
             AuthData auth = dataAccess.getAuth(authToken);
+
             if(auth == null) {
                 throw new ServiceException("Error: unauthorized", 401);
             }
@@ -43,6 +44,7 @@ public class GameService {
             }
 
             AuthData auth = dataAccess.getAuth(authToken);
+
             if (auth == null) {
                 throw new ServiceException("Error: unauthorized", 401);
             }

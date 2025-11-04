@@ -53,10 +53,11 @@ public class UserHandler {
         try {
             userService.logout(authToken);
             ctx.status(200);
-        } catch (ServiceException e) {
-            // If logout fails (e.g., invalid token), return 401
-            ctx.status(401);
-            ctx.json("{\"message\":\"Error: unauthorized\"}");
+            ctx.json("{}");
+        }
+        catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json("{\"message\":\"" + e.getMessage() + "\"}");
         }
     }
 

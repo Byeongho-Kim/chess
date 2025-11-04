@@ -26,7 +26,8 @@ public class UserService {
             if (email == null || email.trim().isEmpty()) {
                 throw new ServiceException("Error: bad request", 400);
             }
-            if(dataAccess.getUser(username) != null) {
+            UserData existingUser = dataAccess.getUser(username);
+            if(existingUser != null) {
                 throw new ServiceException("Error: already taken", 403);
             }
 
@@ -88,7 +89,9 @@ public class UserService {
 
     public void logout(String authToken) throws ServiceException {
         try {
-            if (dataAccess.getAuth(authToken) == null) {
+            AuthData auth = dataAccess.getAuth(authToken);
+
+            if (auth == null) {
                 throw new ServiceException("Error: unauthorized", 401);
             }
 
