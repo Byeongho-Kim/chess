@@ -44,7 +44,8 @@ public class MySQLDataAccess implements DataAccess {
                     }
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DataAccessException("Unable to read data: " + e.getMessage());
         }
         return null;
@@ -67,20 +68,45 @@ public class MySQLDataAccess implements DataAccess {
 
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
-        throw new DataAccessException("");
+        var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        executeUpdate(statement, auth.authToken(), auth.username());
     }
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
         return null;
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        executeUpdate(statement, authToken);
     }
 
     @Override
     public void clearAuths() throws DataAccessException {
+        var statement = "TRUNCATE auth";
+        executeUpdate(statement);
+    }
+
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var authToken = rs.getString("authToken");
+        var username = rs.getString("username");
+        return new AuthData(authToken, username);
     }
 
     // GAME
@@ -151,7 +177,8 @@ public class MySQLDataAccess implements DataAccess {
                     preparedStatement.executeUpdate();
                 }
             }
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex) {
             throw new DataAccessException("Unable to configure database: " + ex.getMessage());
         }
     }
@@ -173,7 +200,8 @@ public class MySQLDataAccess implements DataAccess {
                 }
                 return 0;
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new DataAccessException("unable to update database: " + statement + ", " + e.getMessage());
         }
     }

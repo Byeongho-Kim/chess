@@ -30,6 +30,7 @@ public class DataAccessTests {
         dataAccess.clearAuths();
     }
 
+    // USER
 
     @Test
     void createUserPositive() throws DataAccessException {
@@ -75,5 +76,66 @@ public class DataAccessTests {
         dataAccess.clearUsers();
 
         assertNull(dataAccess.getUser("testuser"));
+    }
+
+    // AUTH
+
+    @Test
+    void createAuthPositive() throws DataAccessException {
+        AuthData auth = new AuthData("token123", "testuser");
+        dataAccess.createAuth(auth);
+
+        AuthData result = dataAccess.getAuth("token123");
+        assertNotNull(result);
+        assertEquals("token123", result.authToken());
+        assertEquals("testuser", result.username());
+    }
+
+    @Test
+    void createAuthNegative() throws DataAccessException {
+        AuthData auth = new AuthData("token123", "testuser");
+        dataAccess.createAuth(auth);
+
+        assertThrows(DataAccessException.class, () -> dataAccess.createAuth(auth));
+    }
+
+    @Test
+    void getAuthPositive() throws DataAccessException {
+        AuthData auth = new AuthData("token123", "testuser");
+        dataAccess.createAuth(auth);
+
+        AuthData result = dataAccess.getAuth("token123");
+        assertNotNull(result);
+        assertEquals("testuser", result.username());
+    }
+
+    @Test
+    void getAuthNegative() throws DataAccessException {
+        AuthData result = dataAccess.getAuth("nonexistent");
+        assertNull(result);
+    }
+
+    @Test
+    void deleteAuthPositive() throws DataAccessException {
+        AuthData auth = new AuthData("token123", "testuser");
+        dataAccess.createAuth(auth);
+
+        dataAccess.deleteAuth("token123");
+        assertNull(dataAccess.getAuth("token123"));
+    }
+
+    @Test
+    void deleteAuthNegative() throws DataAccessException {
+        assertDoesNotThrow(() -> dataAccess.deleteAuth("nonexistent"));
+    }
+
+    @Test
+    void clearAuths() throws DataAccessException {
+        AuthData auth = new AuthData("token123", "testuser");
+        dataAccess.createAuth(auth);
+
+        dataAccess.clearAuths();
+
+        assertNull(dataAccess.getAuth("token123"));
     }
 }
