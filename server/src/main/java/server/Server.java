@@ -7,6 +7,8 @@ import io.javalin.http.Context;
 import service.ServiceException;
 import dataaccess.DataAccessException;
 
+import dataaccess.MySQLDataAccess;
+
 public class Server {
 
     private final Javalin javalin;
@@ -16,7 +18,11 @@ public class Server {
     private ClearHandler clearHandler;
 
     public Server() {
-        dataAccess = new MemoryDataAccess();
+        try {
+            dataAccess = new MySQLDataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Unable to initialize database", e);
+        }
         userHandler = new UserHandler(dataAccess);
         gameHandler = new GameHandler(dataAccess);
         clearHandler = new ClearHandler(dataAccess);

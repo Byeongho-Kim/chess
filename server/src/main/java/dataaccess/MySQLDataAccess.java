@@ -13,6 +13,9 @@ import com.google.gson.Gson;
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
 public class MySQLDataAccess implements DataAccess {
     private int nextGameID = 1;
 
