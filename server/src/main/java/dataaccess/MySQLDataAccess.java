@@ -13,6 +13,7 @@ public class MySQLDataAccess implements DataAccess {
     private int nextGameID = 1;
 
     public MySQLDataAccess() throws DataAccessException {
+        configureDatabase();
     }
 
     // USER
@@ -81,4 +82,32 @@ public class MySQLDataAccess implements DataAccess {
     public int getNextGameID() {
         return nextGameID++;
     }
+
+    private final String[] createStatements = {
+            """
+        CREATE TABLE IF NOT EXISTS user (
+            username VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            PRIMARY KEY (username)
+        )
+        """,
+            """
+        CREATE TABLE IF NOT EXISTS auth (
+            authToken VARCHAR(255) NOT NULL,
+            username VARCHAR(255) NOT NULL,
+            PRIMARY KEY (authToken)
+        )
+        """,
+            """
+        CREATE TABLE IF NOT EXISTS game (
+            gameID INT NOT NULL AUTO_INCREMENT,
+            whiteUsername VARCHAR(255),
+            blackUsername VARCHAR(255),
+            gameName VARCHAR(255) NOT NULL,
+            game TEXT NOT NULL,
+            PRIMARY KEY (gameID)
+        )
+        """
+    };
 }
