@@ -40,8 +40,14 @@ public class UserService {
             return new RegisterResult(username, authToken);
 
         }
+        catch (ServiceException e) {
+            throw e;
+        }
         catch (DataAccessException e) {
             throw new ServiceException("Error: "+ e.getMessage(), 500);
+        }
+        catch (Exception e) {
+            throw new ServiceException("Error: " + e.getMessage(), 500);
         }
     }
 
@@ -55,7 +61,11 @@ public class UserService {
             }
 
             UserData user = dataAccess.getUser(username);
-            if (user == null || !BCrypt.checkpw(password, user.password())) {
+            if (user == null) {
+                throw new ServiceException("Error: unauthorized", 401);
+            }
+
+            if (!BCrypt.checkpw(password, user.password())) {
                 throw new ServiceException("Error: unauthorized", 401);
             }
 
@@ -65,8 +75,14 @@ public class UserService {
 
             return new LoginResult(username, authToken);
         }
+        catch (ServiceException e) {
+            throw e;
+        }
         catch (DataAccessException e) {
             throw new ServiceException("Error: "+ e.getMessage(), 500);
+        }
+        catch (Exception e) {
+            throw new ServiceException("Error: " + e.getMessage(), 500);
         }
     }
 
@@ -78,8 +94,14 @@ public class UserService {
 
             dataAccess.deleteAuth(authToken);
         }
+        catch (ServiceException e) {
+            throw e;
+        }
         catch (DataAccessException e) {
             throw new ServiceException("Error: "+ e.getMessage(), 500);
+        }
+        catch (Exception e) {
+            throw new ServiceException("Error: " + e.getMessage(), 500);
         }
     }
 

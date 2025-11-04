@@ -25,7 +25,13 @@ public class GameService {
             Collection<GameData> games = dataAccess.listGames();
             return new ListGamesResult(new ArrayList<>(games));
         }
+        catch  (ServiceException e) {
+            throw e;
+        }
         catch (DataAccessException e) {
+            throw new ServiceException("Error: " + e.getMessage(), 500);
+        }
+        catch (Exception e) {
             throw new ServiceException("Error: " + e.getMessage(), 500);
         }
     }
@@ -47,7 +53,13 @@ public class GameService {
 
             return new CreateGameResult(gameID);
         }
+        catch (ServiceException e) {
+            throw e;
+        }
         catch (DataAccessException e) {
+            throw new ServiceException("Error: " + e.getMessage(), 500);
+        }
+        catch (Exception e) {
             throw new ServiceException("Error: " + e.getMessage(), 500);
         }
     }
@@ -87,7 +99,13 @@ public class GameService {
                     game.game());
             dataAccess.updateGame(updatedGame);
         }
+        catch (ServiceException e) {
+            throw e;
+        }
         catch (DataAccessException e) {
+            throw new ServiceException("Error: " + e.getMessage(), 500);
+        }
+        catch (Exception e) {
             throw new ServiceException("Error: " + e.getMessage(), 500);
         }
     }
