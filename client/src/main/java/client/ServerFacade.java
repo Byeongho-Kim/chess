@@ -8,7 +8,9 @@ import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+
 import model.AuthData;
+import model.GameData;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -95,6 +97,34 @@ public class ServerFacade {
     // Logout user
     public void logout(String authToken) throws Exception {
         var request = buildRequest("DELETE", "/session", null, authToken);
+        var response = sendRequest(request);
+        handleResponse(response, null);
+    }
+
+    private record CreateGameRequest(String gameName) {}
+    public record CreateGameResult(int gameID) {}
+
+    // Create a new game
+    public CreateGameResult createGame(String authToken, String gameName) throws Exception {
+        var request = buildRequest("POST", "/game", new CreateGameRequest(gameName), authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, CreateGameResult.class);
+    }
+
+    public record ListGamesResult(GameData[] games) {}
+
+    // List all games
+    public ListGamesResult listGames(String authToken) throws Exception {
+        var request = buildRequest("GET", "/game", null, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, ListGamesResult.class);
+    }
+
+    private record JoinGameRequest(String playerColor, int gameID) {}
+
+    // Join a game
+    public void joinGame(String authToken, int gameID, String playerColor) throws Exception {
+        var request = buildRequest("PUT", "/game", new JoinGameRequest(playerColor, gameID), authToken);
         var response = sendRequest(request);
         handleResponse(response, null);
     }
