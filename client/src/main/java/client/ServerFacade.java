@@ -8,6 +8,7 @@ import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import model.AuthData;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -70,5 +71,31 @@ public class ServerFacade {
     // Check if status code is successful
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    // Request/Response records
+    private record RegisterRequest(String username, String password, String email) {}
+
+    // Register a new user
+    public AuthData register(String username, String password, String email) throws Exception {
+        var request = buildRequest("POST", "/user", new RegisterRequest(username, password, email), null);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
+    }
+
+    private record LoginRequest(String username, String password) {}
+
+    // Login existing user
+    public AuthData login(String username, String password) throws Exception {
+        var request = buildRequest("POST", "/session", new LoginRequest(username, password), null);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
+    }
+
+    // Logout user
+    public void logout(String authToken) throws Exception {
+        var request = buildRequest("DELETE", "/session", null, authToken);
+        var response = sendRequest(request);
+        handleResponse(response, null);
     }
 }
