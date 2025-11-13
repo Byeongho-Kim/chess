@@ -38,6 +38,51 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Register - Positive")
+    void registerPositive() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        Assertions.assertNotNull(authData);
+        Assertions.assertNotNull(authData.authToken());
+        Assertions.assertEquals("player1", authData.username());
+    }
+
+    @Test
+    @DisplayName("Register - Negative (duplicate)")
+    void registerNegative() {
+        Assertions.assertDoesNotThrow(() -> facade.register("player1", "password", "p1@email.com"));
+        Assertions.assertThrows(Exception.class, () -> facade.register("player1", "password2", "p2@email.com"));
+    }
+
+    @Test
+    @DisplayName("Login - Positive")
+    void loginPositive() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        var authData = facade.login("player1", "password");
+        Assertions.assertNotNull(authData);
+        Assertions.assertNotNull(authData.authToken());
+    }
+
+    @Test
+    @DisplayName("Login - Negative (wrong password)")
+    void loginNegative() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        Assertions.assertThrows(Exception.class, () -> facade.login("player1", "wrongpassword"));
+    }
+
+    @Test
+    @DisplayName("Logout - Positive")
+    void logoutPositive() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        Assertions.assertDoesNotThrow(() -> facade.logout(authData.authToken()));
+    }
+
+    @Test
+    @DisplayName("Logout - Negative (invalid token)")
+    void logoutNegative() {
+        Assertions.assertThrows(Exception.class, () -> facade.logout("invalid-token"));
+    }
+
+    @Test
     public void sampleTest() {
         Assertions.assertTrue(true);
     }
