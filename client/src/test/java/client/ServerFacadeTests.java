@@ -83,6 +83,55 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("Create Game - Positive")
+    void createGamePositive() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        var result = facade.createGame(authData.authToken(), "TestGame");
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.gameID() > 0);
+    }
+
+    @Test
+    @DisplayName("Create Game - Negative (no auth)")
+    void createGameNegative() {
+        Assertions.assertThrows(Exception.class, () -> facade.createGame("invalid-token", "TestGame"));
+    }
+
+    @Test
+    @DisplayName("List Games - Positive")
+    void listGamesPositive() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        facade.createGame(authData.authToken(), "Game1");
+        facade.createGame(authData.authToken(), "Game2");
+
+        var result = facade.listGames(authData.authToken());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.games().length);
+    }
+
+    @Test
+    @DisplayName("List Games - Negative (no auth)")
+    void listGamesNegative() {
+        Assertions.assertThrows(Exception.class, () -> facade.listGames("invalid-token"));
+    }
+
+    @Test
+    @DisplayName("Join Game - Positive")
+    void joinGamePositive() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        var game = facade.createGame(authData.authToken(), "TestGame");
+        Assertions.assertDoesNotThrow(() -> facade.joinGame(authData.authToken(), game.gameID(), "WHITE"));
+    }
+
+    @Test
+    @DisplayName("Join Game - Negative (no auth)")
+    void joinGameNegative() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        var game = facade.createGame(authData.authToken(), "TestGame");
+        Assertions.assertThrows(Exception.class, () -> facade.joinGame("invalid-token", game.gameID(), "WHITE"));
+    }
+
+    @Test
     public void sampleTest() {
         Assertions.assertTrue(true);
     }
