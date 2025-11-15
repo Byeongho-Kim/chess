@@ -68,11 +68,13 @@ public class GameService {
 
     public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
         try {
+            // Validate auth token
             AuthData auth = dataAccess.getAuth(authToken);
             if (auth == null) {
                 throw new ServiceException("Error: unauthorized", 401);
             }
 
+            // Validate gameID
             if (gameID <= 0) {
                 throw new ServiceException("Error: bad request", 400);
             }
@@ -82,19 +84,19 @@ public class GameService {
                 throw new ServiceException("Error: bad request", 400);
             }
 
-            if (playerColor == null || playerColor.trim().isEmpty()) {
-                return;
-            }
-
-            if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+            // Validate playerColor (null, empty, and bad colors are ALL bad requests)
+            if (playerColor == null || playerColor.trim().isEmpty() ||
+                    (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
                 throw new ServiceException("Error: bad request", 400);
             }
 
+            // Check if spot is already taken
             String currentPlayer = playerColor.equals("WHITE") ? game.whiteUsername() : game.blackUsername();
             if (currentPlayer != null) {
                 throw new ServiceException("Error: already taken", 403);
             }
 
+            // Update game with the new player
             GameData updatedGame = new GameData(
                     game.gameID(),
                     playerColor.equals("WHITE") ? auth.username() : game.whiteUsername(),

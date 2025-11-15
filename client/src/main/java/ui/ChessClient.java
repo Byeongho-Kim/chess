@@ -183,7 +183,6 @@ public class ChessClient {
             }
 
             var game = games[gameNumber - 1];
-            server.joinGame(authToken, game.gameID(), null);
 
             return String.format("Observing game%n%s", drawBoard("WHITE"));
         }
