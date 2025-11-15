@@ -34,18 +34,18 @@ public class ChessClient {
 
             try {
                 result = eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(SET_TEXT_COLOR_BLUE + result + RESET_TEXT_COLOR);
             }
             catch (Throwable e) {
                 var msg = e.getMessage();
-                System.out.print(RED + msg);
+                System.out.print(SET_TEXT_COLOR_RED + msg + RESET_TEXT_COLOR);
             }
         }
         System.out.println();
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + GREEN);
+        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
     public String eval(String input) {
@@ -65,7 +65,8 @@ public class ChessClient {
 
                 default -> help();
             };
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             return ex.getMessage();
         }
     }
@@ -167,7 +168,7 @@ public class ChessClient {
             var game = games[gameNumber - 1];
             server.joinGame(authToken, game.gameID(), color);
 
-            return String.format("Joined game as %s%n[Board will be drawn here]%n", color);
+            return String.format("Joined game as %s%n%s", color, drawBoard(color));
         }
         throw new Exception("Expected: <game number> <WHITE|BLACK>");
     }
@@ -184,8 +185,16 @@ public class ChessClient {
             var game = games[gameNumber - 1];
             server.joinGame(authToken, game.gameID(), null);
 
-            return String.format("Observing game%n[Board will be drawn here]%n");
+            return String.format("Observing game%n%s", drawBoard("WHITE"));
         }
         throw new Exception("Expected: <game number>");
+    }
+
+    private String drawBoard(String perspective) {
+        var drawer = new BoardDrawer();
+        if (perspective.equals("BLACK")) {
+            return drawer.drawBlackPerspective();
+        }
+        return drawer.drawWhitePerspective();
     }
 }

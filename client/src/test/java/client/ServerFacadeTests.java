@@ -9,11 +9,12 @@ public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
+    private static int port;
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
+        port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade(port);
     }
@@ -28,7 +29,7 @@ public class ServerFacadeTests {
         // Clear database before each test
         try {
             var request = java.net.http.HttpRequest.newBuilder()
-                    .uri(new java.net.URI("http://localhost:" + server.port() + "/db"))
+                    .uri(new java.net.URI("http://localhost:" + port + "/db"))
                     .DELETE()
                     .build();
             java.net.http.HttpClient.newHttpClient().send(request,
@@ -130,10 +131,4 @@ public class ServerFacadeTests {
         var game = facade.createGame(authData.authToken(), "TestGame");
         Assertions.assertThrows(Exception.class, () -> facade.joinGame("invalid-token", game.gameID(), "WHITE"));
     }
-
-    @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
-    }
-
 }
