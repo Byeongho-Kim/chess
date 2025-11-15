@@ -69,7 +69,9 @@ public class BoardDrawer {
     }
 
     private String getPiece(int row, int col) {
-        if (row == 2) return SET_TEXT_COLOR_RED + "P";
+        if (row == 2) {
+            return SET_TEXT_COLOR_RED + "P";
+        }
         if (row == 7) return SET_TEXT_COLOR_BLUE + "P";
 
         if (row == 1) {
