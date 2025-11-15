@@ -70,21 +70,23 @@ public class GameService {
         try {
             AuthData auth = dataAccess.getAuth(authToken);
             if (auth == null) {
-                throw new ServiceException("Error: bad request", 401);
+                throw new ServiceException("Error: unauthorized", 401);
             }
 
-            if (playerColor == null || playerColor.trim().isEmpty()) {
-                throw new ServiceException("Error: bad request", 400);
-            }
-            if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
-                throw new ServiceException("Error: bad request", 400);
-            }
             if (gameID <= 0) {
                 throw new ServiceException("Error: bad request", 400);
             }
 
             GameData game = dataAccess.getGame(gameID);
             if (game == null) {
+                throw new ServiceException("Error: bad request", 400);
+            }
+
+            if (playerColor == null || playerColor.trim().isEmpty()) {
+                return;
+            }
+
+            if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
                 throw new ServiceException("Error: bad request", 400);
             }
 
@@ -95,8 +97,8 @@ public class GameService {
 
             GameData updatedGame = new GameData(
                     game.gameID(),
-                    playerColor.equals("WHITE") ? auth.username():game.whiteUsername(),
-                    playerColor.equals("BLACK") ? auth.username():game.blackUsername(),
+                    playerColor.equals("WHITE") ? auth.username() : game.whiteUsername(),
+                    playerColor.equals("BLACK") ? auth.username() : game.blackUsername(),
                     game.gameName(),
                     game.game());
             dataAccess.updateGame(updatedGame);

@@ -21,6 +21,7 @@ public class MySQLDataAccess implements DataAccess {
 
     public MySQLDataAccess() throws DataAccessException {
         configureDatabase();
+        initializeNextGameID();
     }
 
     // USER
@@ -167,6 +168,22 @@ public class MySQLDataAccess implements DataAccess {
         var statement = "TRUNCATE game";
         executeUpdate(statement);
         nextGameID = 1;
+    }
+
+    private void initializeNextGameID() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT MAX(gameID) as maxID FROM game";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int maxID = rs.getInt("maxID");
+                        nextGameID = maxID + 1;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to initialize game ID: " + e.getMessage());
+        }
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {

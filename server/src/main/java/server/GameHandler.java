@@ -40,7 +40,7 @@ public class GameHandler {
         String authToken = ctx.header("authorization");
         JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
 
-        if (request.playerColor == null || request.gameID <= 0) {
+        if (request.gameID <= 0) {
             ctx.status(400);
             ctx.json("{\"message\":\"Error: bad request\"}");
             return;

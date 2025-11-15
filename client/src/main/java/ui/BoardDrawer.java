@@ -57,7 +57,11 @@ public class BoardDrawer {
 
         for (int col = 1; col <= 8; col++) {
             int actualCol = isWhitePerspective ? col : (9 - col);
-            boolean isLightSquare = (row + actualCol) % 2 == 0;
+
+            int boardRow = row;
+            int boardCol = isWhitePerspective ? col : (9 - col);
+
+            boolean isLightSquare = (boardRow + boardCol) % 2 == 1;
 
             sb.append(isLightSquare ? LIGHT_SQUARE : DARK_SQUARE);
             sb.append(" ").append(getPiece(row, actualCol)).append(" ");

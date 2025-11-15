@@ -60,7 +60,8 @@ public class ServerFacade {
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
         int status = response.statusCode();
         if (!isSuccessful(status)) {
-            throw new Exception("Error: " + response.body());
+            String errorMessage = extractErrorMessage(response.body(), status);
+            throw new Exception(errorMessage);
         }
 
         if (responseClass != null) {
@@ -68,6 +69,32 @@ public class ServerFacade {
         }
         return null;
     }
+
+    // Helper method to extract user-friendly error messages
+    private String extractErrorMessage(String responseBody, int statusCode) {
+        try {
+            var errorResponse = new Gson().fromJson(responseBody, ErrorResponse.class);
+            if (errorResponse != null && errorResponse.message != null) {
+                String message = errorResponse.message;
+                if (message.startsWith("Error: ")) {
+                    message = message.substring(7);
+                }
+                return message;
+            }
+        } catch (Exception e) {
+        }
+
+        return switch (statusCode) {
+            case 400 -> "Bad request. Please check your input and try again.";
+            case 401 -> "Invalid username or password.";
+            case 403 -> "Access denied. That username or spot may already be taken.";
+            case 404 -> "Not found. Please check your request.";
+            case 500 -> "Server error. Please try again later.";
+            default -> "Request failed. Please try again.";
+        };
+    }
+
+    private record ErrorResponse(String message) {}
 
     // Check if status code is successful
     private boolean isSuccessful(int status) {
