@@ -72,7 +72,9 @@ public class BoardDrawer {
         if (row == 2) {
             return SET_TEXT_COLOR_RED + "P";
         }
-        if (row == 7) return SET_TEXT_COLOR_BLUE + "P";
+        if (row == 7) {
+            return SET_TEXT_COLOR_BLUE + "P";
+        }
 
         if (row == 1) {
             return SET_TEXT_COLOR_RED + switch (col) {
