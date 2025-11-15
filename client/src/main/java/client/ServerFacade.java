@@ -35,7 +35,6 @@ public class ServerFacade {
         if (authToken != null) {
             builder.setHeader("Authorization", authToken);
         }
-
         return builder.build();
     }
 

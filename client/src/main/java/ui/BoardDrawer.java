@@ -97,7 +97,6 @@ public class BoardDrawer {
                 default -> " ";
             };
         }
-
         return " ";
     }
 }
